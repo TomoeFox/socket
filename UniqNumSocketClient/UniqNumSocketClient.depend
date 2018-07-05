@@ -1,0 +1,20 @@
+# depslib dependency file v1.0
+1530647294 source:/home/tomoefox/UniqNumClient/client.cpp
+	<sys/types.h>
+	<sys/socket.h>
+	<netinet/in.h>
+	<unistd.h>
+	<fstream>
+	<iostream>
+	<cstring>
+
+1530822474 source:/home/tomoefox/socket/UniqNumSocketClient/client.cpp
+	<sys/types.h>
+	<sys/socket.h>
+	<netinet/in.h>
+	<unistd.h>
+	<fstream>
+	<iostream>
+	<cstring>
+	<pthread.h>
+

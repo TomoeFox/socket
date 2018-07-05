@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1530647255 source:/home/tomoefox/socket/UniqNumSocketServer/server.cpp
+1530816334 source:/home/tomoefox/socket/UniqNumSocketServer/server.cpp
 	<sys/types.h>
 	<sys/socket.h>
 	<netinet/in.h>
@@ -7,4 +7,5 @@
 	<fstream>
 	<iostream>
 	<cstring>
+	<pthread.h>
 

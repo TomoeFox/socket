@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <cstring>
+#include <pthread.h>
 using namespace std;
 class NumFile {
 private:
@@ -51,8 +52,9 @@ return this->num;
 };
 class SocketServer : public NumFile{
 private:
-int sock, listener;
-struct sockaddr_in addr;
+int serversock, clientsock;
+int sizeaddr;
+struct sockaddr_in client,server;
 char buf[1024];
 int bytes_read;
 public:
@@ -61,55 +63,56 @@ string Code="Number is:";
 Code.append(to_string(num));
 return Code;
 }
+static void *proccesor(void * serversock) {
+SocketServer Srv;
+int sock = *(int*)serversock;
+int readbyte;
+char *servermessage, clientmessage[1024];
+
+while((readbyte=recv(sock,clientmessage,1024,0))>0){
+cout << clientmessage;
+servermessage="Answere";
+write(sock,servermessage,sizeof(servermessage));
+close(sock);
+}
+
+
+
+
+if (readbyte==0){
+cout << "Client disconnect\n";
+}
+
+
+}
 void socket_work(){
-    listener = socket(AF_INET, SOCK_STREAM, 0);
-    if(listener < 0)
+    serversock = socket(AF_INET, SOCK_STREAM, 0);
+    if(serversock < 0)
     {
-        perror("socket");
+cout << "Error socket\n";
         exit(1);
     }
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(1325);
-    addr.sin_addr.s_addr = INADDR_ANY;
-    if(bind(listener, (struct sockaddr *)&addr, sizeof(addr)) < 0){
+    server.sin_family = AF_INET;
+    server.sin_port = htons(1325);
+    server.sin_addr.s_addr =INADDR_ANY;
+    if(bind(serversock,(struct sockaddr *)&server, sizeof(server)) < 0){
         perror("bind");
         exit(2);}
-    listen(listener, 1);
-    while(true){
-        sock = accept(listener, NULL, NULL);
-        if(sock < 0)
-        {
-    perror("accept");
-    exit(3);
-        }
-        switch(fork())
-        {
-        case -1:
-            perror("fork");
-            break;
-        case 0:
-            close(listener);
-            while(1)
-            {
-                bytes_read = recv(sock, buf, 1024, 0);
-                if(bytes_read <= 0) break;
-                sendnumber();
-            }
+    listen(serversock,10);
+    sizeaddr = sizeof(struct sockaddr_in);
+    pthread_t threadid;
+    while((clientsock=accept(serversock,(struct sockaddr*)&client,(socklen_t*)&sizeaddr))){
 
-            close(sock);
-            _exit(0);
-
-        default:
-            close(sock);
-
-        }
+     if(pthread_create(&threadid,NULL,proccesor,(void*)&clientsock)<0) {
+     cout << "Multithreadin error\n";
+     exit(2);
+     }
     }
-    close(listener);
-}
-void sendnumber(){
-Getnum();
-strcpy(buf,SendCode(Gennum()).c_str());
-send(sock, buf, sizeof(buf), 0);
+    if (clientsock < 0) {
+    cout << "Accept error\n";
+    exit(2);
+    }
+
 }
 };
 int main()

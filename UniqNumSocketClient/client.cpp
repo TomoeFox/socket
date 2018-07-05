@@ -5,16 +5,17 @@
 #include <fstream>
 #include <iostream>
 #include <cstring>
+
+#include <pthread.h>
 using namespace std;
-char message[] = "GenNumber\n";
-char buf[sizeof(message)];
 
-int main()
-{
-    int sock;
-    struct sockaddr_in addr;
-
-    sock = socket(AF_INET, SOCK_STREAM, 0);
+class ClientSocket{/*
+private:
+int sock;
+struct sockaddr_in addr;
+public:
+void Connect(){
+sock = socket(AF_INET, SOCK_STREAM, 0);
     if(sock < 0)
     {
         perror("socket");
@@ -30,11 +31,44 @@ int main()
         exit(2);
     }
 
-    send(sock, message, sizeof(message), 0);
-    recv(sock, buf, 1024, 0);
+  //  send(sock, message, sizeof(message), 0);
+//    recv(sock, buf, 1024, 0);
 
-    cout << buf << endl;
+  //  cout << buf << endl;
     close(sock);
+} */
+};
+
+int main(int argc, char *argv[])
+{
+size_t posport,posmessage;
+int buff;
+string arguments,port,message;
+ClientSocket Client;
+
+
+for(int i = 0; i < argc;i++){
+arguments.append(argv[i]);
+}
+posmessage=arguments.find("-m");
+
+posport=arguments.find("-p");
+
+if(posmessage!=arguments.npos)
+{
+message = arguments.substr(posmessage+2);
+cout << message  <<  endl;
+}
+if(posport!=arguments.length()){
+port = arguments.substr(posport+2,posmessage-posport-2);
+if(port.length()>5){
+cout << "Port out of range" << endl;
+return 1;
+}
+cout << port << endl;
+
+//cout << "PORT";
+}
 
     return 0;
 }
